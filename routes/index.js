@@ -1,29 +1,36 @@
-var express = require('express');
-var router = express.Router();
-
-var fs = require('fs');
-
-var Cart = require('../models/cart');
-var products = JSON.parse(fs.readFileSync('./data/products.json', 'utf8'));
+const mongoose = require('mongoose');
+const express = require('express');
+const router = express.Router();
+const fs = require('fs');
+const Cart = require('../models/cart');
+const productModel = require('../models/product');
 
 router.get('/', function (req, res, next) {
-  res.render('index', 
-  { 
-    title: 'NodeJS Shopping Cart',
-    products: products
-  }
-  );
+  return productModel.find({})
+    .lean()
+    .exec()
+    .then(products => res.render('index',
+      {
+        title: 'NodeJS Shopping Cart',
+        products: products
+      })
+    )
+    .catch(err => res.status(500).render('error', { message: err.message, err }));
 });
 
 router.get('/add/:id', function(req, res, next) {
-  var productId = req.params.id;
-  var cart = new Cart(req.session.cart ? req.session.cart : {});
-  var product = products.filter(function(item) {
-    return item.id == productId;
-  });
-  cart.add(product[0], productId);
-  req.session.cart = cart;
-  res.redirect('/');
+  const productId = req.params.id;
+  const cart = new Cart(req.session.cart ? req.session.cart : {});
+
+  return productModel.findOne({ _id: mongoose.Types.ObjectId(productId) })
+    .lean()
+    .exec()
+    .then(product => {
+      cart.add(product, productId);
+      req.session.cart = cart;
+      res.redirect('/');
+    })
+    .catch(err => res.status(500).render('error', { message: err.message, err }));
 });
 
 router.get('/cart', function(req, res, next) {
@@ -32,17 +39,19 @@ router.get('/cart', function(req, res, next) {
       products: null
     });
   }
-  var cart = new Cart(req.session.cart);
+  const cart = new Cart(req.session.cart);
+  console.log(cart.displayTotalPrice);
   res.render('cart', {
     title: 'NodeJS Shopping Cart',
     products: cart.getItems(),
-    totalPrice: cart.totalPrice
+    totalPrice: cart.totalPrice,
+    displayTotalPrice: cart.displayTotalPrice
   });
 });
 
 router.get('/remove/:id', function(req, res, next) {
-  var productId = req.params.id;
-  var cart = new Cart(req.session.cart ? req.session.cart : {});
+  const productId = req.params.id;
+  const cart = new Cart(req.session.cart ? req.session.cart : {});
 
   cart.remove(productId);
   req.session.cart = cart;
