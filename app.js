@@ -10,7 +10,7 @@ const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo')(session);
 const index = require('./routes/index');
 
-mongoose.connect('mongodb://localhost:27017/shopping-cart', { useNewUrlParser: true });
+mongoose.connect('mongodb+srv://willtrinh:qwert12345@cluster-basicnodejs-gkl63.mongodb.net/shopping-cart?retryWrites=true&w=majority', { useNewUrlParser: true });
 
 const app = express();
 
