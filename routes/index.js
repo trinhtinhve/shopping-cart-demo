@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
-const fs = require('fs');
 const Cart = require('../models/cart');
 const productModel = require('../models/product');
 
@@ -40,7 +39,6 @@ router.get('/cart', function(req, res, next) {
     });
   }
   const cart = new Cart(req.session.cart);
-  console.log(cart.displayTotalPrice);
   res.render('cart', {
     title: 'NodeJS Shopping Cart',
     products: cart.getItems(),

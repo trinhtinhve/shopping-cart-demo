@@ -9,7 +9,7 @@ module.exports = function Cart(cart) {
     this.displayTotalPrice = formatNumber(this.totalPrice);
 
     this.add = function(item, id) {
-        var cartItem = this.items[id];
+        let cartItem = this.items[id];
         if (!cartItem) {
             cartItem = this.items[id] = {item: item, quantity: 0, price: 0};
         }
@@ -29,8 +29,8 @@ module.exports = function Cart(cart) {
     };
     
     this.getItems = function() {
-        var arr = [];
-        for (var id in this.items) {
+        let arr = [];
+        for (let id in this.items) {
             arr.push(this.items[id]);
         }
         return arr;
