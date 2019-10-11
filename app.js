@@ -35,6 +35,9 @@ app.use(function(req, res, next) {
 });
 
 app.use('/', index);
+app.get('/game', (req, res) => {
+  res.render('game');
+});
 
 app.use(function(req, res, next) {
   let err = new Error('Not Found');
